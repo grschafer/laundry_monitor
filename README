@@ -1,1 +1,5 @@
 Arduino and web service/site code for tracking and alerting laundry machine usage
+
+Uses the VirtualWire library:
+http://www.open.com.au/mikem/arduino/VirtualWire.pdf
+
