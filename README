@@ -3,3 +3,9 @@ Arduino and web service/site code for tracking and alerting laundry machine usag
 Uses the VirtualWire library:
 http://www.open.com.au/mikem/arduino/VirtualWire.pdf
 
+Uses Werkzeug for python web service code:
+http://werkzeug.pocoo.org/
+
+Uses mod_wsgi to connect Werkzeug with Apache server:
+http://code.google.com/p/modwsgi/
+
