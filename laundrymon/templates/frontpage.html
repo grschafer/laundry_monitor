@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<div id="status">
+    <table>
+        <tr>
+            <th>Floor</th>
+            <th colspan="2">Washers</th>
+            <th colspan="2">Dryers</th>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td id="3LW">L: {{ states['3LW'] }}</td>
+            <td id="3RW">R: {{ states['3RW'] }}</td>
+            <td id="3LD">L: {{ states['3LD'] }}</td>
+            <td id="3RD">R: {{ states['3RD'] }}</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td id="2LW">L: {{ states['2LW'] }}</td>
+            <td id="2RW">R: {{ states['2RW'] }}</td>
+            <td id="2LD">L: {{ states['2LD'] }}</td>
+            <td id="2RD">R: {{ states['2RD'] }}</td>
+        </tr>
+    </table>
+</div>
+<div id="charts">
+    <table>
+        <tr>
+            <th>Machine</th>
+            <th>Usage</th>
+        </tr>
+        <tr><td>3LW</td><td rowspan="2"><div style="min-width: 400px; height: 400px; margin: 0 auto" id="3W_chart"></div></td></tr>
+        <tr><td>3RW</td></tr>
+        <tr><td>3LD</td><td rowspan="2"><div style="min-width: 400px; height: 400px; margin: 0 auto" id="3D_chart"></div></td></tr>
+        <tr><td>3RD</td></tr>
+        <tr><td>2LW</td><td rowspan="2"><div style="min-width: 400px; height: 400px; margin: 0 auto" id="2W_chart"></div></td></tr>
+        <tr><td>2RW</td></tr>
+        <tr><td>2LD</td><td rowspan="2"><div style="min-width: 400px; height: 400px; margin: 0 auto" id="2D_chart"></div></td></tr>
+        <tr><td>2RD</td></tr>
+    </table>
+</div>
+    
+{% endblock body %}

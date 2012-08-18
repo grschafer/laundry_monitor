@@ -1,0 +1,23 @@
+<!doctype html>
+
+<title>LaundryMon</title>
+
+<link rel="stylesheet" href="/static/styles.css" type="text/css" />
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="/static/highcharts.js"></script>
+<script src="/static/laundrymon.js"></script>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class="flashes">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+       </ul>
+    {% endif %}
+{% endwith %}
+
+<h1><a href="/">LaundryMon</a></h1>
+
+{% block body %}
+{% endblock body %}
