@@ -40,17 +40,27 @@ var data_to_charts = {
     '2LD': '2D',
     '2RD': '2D',
 }
+
+function update_machine(key, val, timestamp, shift) {
+    $('#' + key).text(key + ': ' + val);
+    // DON'T ADD IF ALREADY IN SERIES?
+    charts[data_to_charts[key]].series[Number(key.indexOf('L') != -1)].addPoint([timestamp * 1000, val], true, shift);
+}
+
+function update_all_from_json(json, shift) {
+    for (var idx in json['states']) {
+        var timestamp = json['states'][idx]['timestamp'];
+        for (var key in json['states'][idx]) {
+            if (key != "timestamp") {
+                update_machine(key, json['states'][idx][key], timestamp, shift);
+            }
+        }
+    }
+}
+
 function get_state() {
     $.getJSON("/get_state", function(data) {
-        $.each(data, function(key, val) {
-            if (key != "timestamp") {
-                $('#' + key).text(key + ': ' + val);
-                charts[data_to_charts[key]].series[Number(key.indexOf('L') != -1)].addPoint([data['timestamp'] * 1000, val], true, true);
-            }
-        });
-        console.log(data);
-        console.log(parseInt(data['timestamp']));
-        console.log((new Date()).getTime());
+        update_all_from_json(data, true);
     });
 }
 function chart_options(target) {
@@ -98,20 +108,33 @@ function chart_options(target) {
         series: [
             {
                 name: 'Left',
-                data: [null, null, null, null, null, null, null, null, null]
+                data: []
             },
             {
                 name: 'Right',
-                data: [null, null, null, null, null, null, null, null, null]
+                data: []
             },
         ]
     }
 }
+
 $(document).ready(function() {
     for (var key in charts) {
-        console.log(key);
-        console.log(key + '_chart');
         charts[key] = new Highcharts.Chart(chart_options(key));
     }
-    setInterval(get_state, 10000);
+    
+    var intId;
+    $.getJSON("/get_state_history/50", function(data) {
+        update_all_from_json(data, false);
+        intId = setInterval(get_state, 10000);
+    });
+    
+    $('#update_checkbox').change(function(evt) {
+        if (this.checked) {
+            intId = setInterval(get_state, 10000);
+        }
+        else {
+            clearInterval(intId);
+        }
+    });
 });

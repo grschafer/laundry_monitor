@@ -32,11 +32,13 @@ db.disconnect()
 # ============================================================================ #
 # Data Functions #
 # ============================================================================ #
-
-def get_machine_states(db):
+    
+def get_machine_states(db, n):
     states = db.states.find({}, {'_id':0}) \
-                      .sort('timestamp', pymongo.DESCENDING)[0]
-    return states
+                      .sort('timestamp', pymongo.DESCENDING)[0:n]
+    states = list(states)
+    print 'states:',states
+    return states[::-1]
 
 # ============================================================================ #
 # View Functions #
@@ -44,13 +46,15 @@ def get_machine_states(db):
 
 @app.route('/')
 def frontpage():
-    # get historical info (will be drawn hidden initially)
-    states = get_machine_states(g.db)
-    return render_template('frontpage.html', states=states)
+    return render_template('frontpage.html')
     
 @app.route('/get_state')
 def get_state():
-    return jsonify(get_machine_states(g.db))
+    return jsonify(states=get_machine_states(g.db, 1))
+    
+@app.route('/get_state_history/<int:n>')
+def get_state_history(n):
+    return jsonify(states=get_machine_states(g.db, n))
 
 # ============================================================================ #
 # Connection and Logging Functions #
