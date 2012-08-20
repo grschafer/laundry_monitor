@@ -33,12 +33,25 @@ db.disconnect()
 # Data Functions #
 # ============================================================================ #
     
-def get_machine_states(db, n):
-    states = db.states.find({}, {'_id':0}) \
-                      .sort('timestamp', pymongo.DESCENDING)[0:n]
-    states = list(states)
-    print 'states:',states
-    return states[::-1]
+def get_last_state(db):
+    state = db.states.find({}, {'_id':0}) \
+                     .sort('timestamp', pymongo.DESCENDING)[0]
+    return state
+
+def get_machine_history(db, machine, n):
+    if machine.lower() == 'all':
+        states = db.states.find({}, {'_id':0}) \
+                          .sort('timestamp', pymongo.DESCENDING)[0:n]
+        states = list(states)[::-1]
+        timestamps = [int(x.pop('timestamp') * 1000) for x in states]
+        # make {machine: [[timestamp, value], [timestamp, value], ...], ...}
+        states = dict([(x, zip(timestamps, [y[x] for y in states])) for x in states[0]])
+    else:
+        states = db.states.find({}, {'_id':0, machine:1, 'timestamp':1}) \
+                          .sort('timestamp', pymongo.DESCENDING)[0:n]
+        states = [(x['timestamp'], x[machine]) for x in reversed(states)]
+    # print 'states:',states
+    return states
 
 # ============================================================================ #
 # View Functions #
@@ -50,11 +63,11 @@ def frontpage():
     
 @app.route('/get_state')
 def get_state():
-    return jsonify(states=get_machine_states(g.db, 1))
+    return jsonify(get_last_state(g.db))
     
-@app.route('/get_state_history/<int:n>')
-def get_state_history(n):
-    return jsonify(states=get_machine_states(g.db, n))
+@app.route('/get_state_history/<string:machine>/<int:n>')
+def get_state_history(machine, n):
+    return jsonify(get_machine_history(g.db, machine, n))
 
 # ============================================================================ #
 # Connection and Logging Functions #

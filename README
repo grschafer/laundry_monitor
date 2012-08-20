@@ -12,5 +12,5 @@ PUT IN ALL THE DEPENDENCIES
     mongo - http://www.mongodb.org/downloads
     pymongo - http://api.mongodb.org/python/current/
     twitter bootstrap
-    jquery
+    jquery 1.7.2 instead of 1.8.* because highcharts zoom issue
     etc

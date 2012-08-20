@@ -1,26 +1,11 @@
 /*
-
-For graph use:
-highcharts: http://www.highcharts.com/demo/dynamic-update
-smoothie: http://smoothiecharts.org/
-
-Use Twitter Bootstrap to have 2 tabs
-Update info for both tabs at same time
-    (i.e. - fetching data adds to graph series and updates current states)
-
-    
-things to do
-    remove graphs from the table, put labelling in the graph
-    let width stretch
-    make height smaller
-    
-    move graph javascript into template so it has starting values?
-    OR add endpoint call to get history for a washer/dryer pair (OR FOR ALL 8)
-        don't create chart until history has been filled
-        don't start setInterval until all charts created?
-        
-    
-    checkbox to turn off auto-update?
+things to do:
+    clean up status page
+        add big icons and styling to indicate usage/availability
+    layout stuff
+        title, tab positioning, status page formatting
+    timezone issue for graphs
+        CST = UTC +6
     
 */
 
@@ -39,6 +24,12 @@ var data_to_charts = {
     '2RW': '2W',
     '2LD': '2D',
     '2RD': '2D',
+}
+var charts_to_data = {
+    '3W': ['3LW', '3RW'],
+    '3D': ['3LD', '3RD'],
+    '2W': ['2LW', '2RW'],
+    '2D': ['2LD', '2RD'],
 }
 
 function update_machine(key, val, timestamp, shift) {
@@ -60,10 +51,14 @@ function update_all_from_json(json, shift) {
 
 function get_state() {
     $.getJSON("/get_state", function(data) {
-        update_all_from_json(data, true);
+        for (var key in data) {
+            if (key != "timestamp") {
+                update_machine(key, data[key], data['timestamp'], true);
+            }
+        }
     });
 }
-function chart_options(target) {
+function chart_options(target, series) {
     return {
         chart: {
             renderTo: target + '_chart',
@@ -87,7 +82,7 @@ function chart_options(target) {
             }
         },
         global: {
-            useUTC: false
+            useUTC: true
         },
         tooltip: {
             formatter: function() {
@@ -96,10 +91,14 @@ function chart_options(target) {
                 Highcharts.numberFormat(this.y, 2);
             }
         },
-        credits: {
-            enabled: false
-        },
         legend: {
+            align: 'left',
+            verticalAlign: 'center',
+            layout: 'vertical',
+            x: 0,
+            y: 60
+        },
+        credits: {
             enabled: false
         },
         exporting: {
@@ -107,27 +106,29 @@ function chart_options(target) {
         },
         series: [
             {
-                name: 'Left',
-                data: []
+                name: (target[0] == '3' ? '3rd Floor' : '2nd Floor') + ' Left ' + (target[1] == 'W' ? 'Washer' : 'Dryer'),
+                data: series[0]
             },
             {
-                name: 'Right',
-                data: []
+                name: (target[0] == '3' ? '3rd Floor' : '2nd Floor') + ' Right ' + (target[1] == 'W' ? 'Washer' : 'Dryer'),
+                data: series[1]
             },
         ]
     }
 }
 
 $(document).ready(function() {
-    for (var key in charts) {
-        charts[key] = new Highcharts.Chart(chart_options(key));
-    }
-    
-    var intId;
-    $.getJSON("/get_state_history/50", function(data) {
-        update_all_from_json(data, false);
-        intId = setInterval(get_state, 10000);
+    $.getJSON("/get_state_history/all/50", function(data) {
+        //update_all_from_json(data, false);
+        
+        for (var key in charts) {
+            charts[key] = new Highcharts.Chart(chart_options(key,
+                [data[charts_to_data[key][0]], data[charts_to_data[key][1]]]
+                ));
+        }
     });
+    
+    var intId = setInterval(get_state, 10000);
     
     $('#update_checkbox').change(function(evt) {
         if (this.checked) {

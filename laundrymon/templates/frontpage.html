@@ -1,37 +1,48 @@
 {% extends "layout.html" %}
 
 {% block body %}
+<ul class="nav nav-tabs" id="myTab">
+    <li><a href="#status" data-toggle="tab">Status</a></li>
+    <li><a href="#history" data-toggle="tab">History</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane" id="status">
+        <div class="row">
+            <div class="span2">Floor</div>
+            <div class="span2">Washers</div>
+            <div class="span2">Dryers</div>
+        </div>
+        <div class="row">
+            <div class="span2">3</div>
+            <div class="span1" id="3LW">3LW</div>
+            <div class="span1" id="3RW">3RW</div>
+            <div class="span1" id="3LD">3LD</div>
+            <div class="span1" id="3RD">3RD</div>
+        </div>
+        <div class="row">
+            <div class="span2">2</div>
+            <div class="span1" id="2LW">2LW</div>
+            <div class="span1" id="2RW">2RW</div>
+            <div class="span1" id="2LD">2LD</div>
+            <div class="span1" id="2RD">2RD</div>
+        </div>
+    </div>
+    <div class="tab-pane" id="history">
+        <div style="float: right; margin-right: 20px;">
+                <label class="checkbox"><input type="checkbox" id="update_checkbox" checked > Auto-update graphs</label>
+        </div>
+        <br />
+        <div class="chart" id="3W_chart"></div>
+        <div class="chart" id="3D_chart"></div>
+        <div class="chart" id="2W_chart"></div>
+        <div class="chart" id="2D_chart"></div>
+    </div>
+</div>
 
-<div id="status">
-    <table>
-        <tr>
-            <th>Floor</th>
-            <th colspan="2">Washers</th>
-            <th colspan="2">Dryers</th>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td id="3LW"></td>
-            <td id="3RW"></td>
-            <td id="3LD"></td>
-            <td id="3RD"></td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td id="2LW"></td>
-            <td id="2RW"></td>
-            <td id="2LD"></td>
-            <td id="2RD"></td>
-        </tr>
-    </table>
-</div>
-<div id="charts">
-    <div style="float:right;">Auto-update graphs: <input type="checkbox" id="update_checkbox" checked /></div>
-    <br />
-    <div class="chart" id="3W_chart"></div>
-    <div class="chart" id="3D_chart"></div>
-    <div class="chart" id="2W_chart"></div>
-    <div class="chart" id="2D_chart"></div>
-</div>
+<script type="text/javascript">
+    $(function () {
+        $('#myTab a:first').tab('show');
+    })
+</script>
     
 {% endblock body %}
